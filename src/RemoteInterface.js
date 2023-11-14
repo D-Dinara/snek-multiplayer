@@ -61,8 +61,29 @@ class RemoteInterface {
 
     if (this.newClientHandler) this.newClientHandler(client)
 
+    try {
+      //Write a message to a new player
+      client.write(`Welcome to the server! The number of players now: ${this.clients.length}\n`);
+
+      //Broadcast a message to all connected clients (excluding the new client)
+      this.broadcastToOthers(client, `A new player has joined! The number of players now: ${this.clients.length}\n`);
+    } catch (e) {
+      console.log('error')
+    }
+
     client.on('data', this.handleClientData.bind(this, client))
     client.on('end', this.handleClientEnded.bind(this, client))
+  }
+
+  //function broadcasts a message to all clients except the sender
+  broadcastToOthers(sender, message) {
+    //iterate through the clients array
+    this.clients.forEach((connectedClient) => {
+      //send the message to each client except the sender
+      if (connectedClient !== sender) {
+        connectedClient.write(message);
+      }
+    });
   }
 
   handleClientData(client, data) {
@@ -74,6 +95,16 @@ class RemoteInterface {
   handleClientEnded(client) {
     if (client.idleTimer) clearTimeout(client.idleTimer)
     if (this.clientEndHandler) this.clientEndHandler(client)
+
+    //Remove the player from the clients array
+    this.clients = this.clients.filter(conn => conn !== client);
+
+    try {
+      //Broadcast a message to all connected clients (excluding the current client)
+      this.broadcastToOthers(client, `A player has left the game! The number of players now: ${this.clients.length}\n`);
+    } catch (e) {
+      console.log('error')
+    }
   }
 
   bindHandlers(clientDataHandler, newClientHandler, clientEndHandler) {

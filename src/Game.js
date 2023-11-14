@@ -91,7 +91,7 @@ class Game {
   safeSnakeStartingCoords() {
     let attempts = 0;
 
-    while(attempts < 100) {
+    while (attempts < 100) {
       // console.log('trying: ', attempts);
       const x = randomNum(0 + INITIAL_SNAKE_SIZE, this.ui.gameContainer.width - 1 - INITIAL_SNAKE_SIZE)
       const y = randomNum(0 + INITIAL_SNAKE_SIZE, this.ui.gameContainer.height - 1 - INITIAL_SNAKE_SIZE)
@@ -162,7 +162,7 @@ class Game {
 
   isSafe(x, y) {
     // If the pixel is on a snake, regenerate the dot
-    return(
+    return (
       !this.snakes.some(s => s.isAt({ x, y })) &&
       !this.dots.some(d => d.isAt({x, y}))
     )
